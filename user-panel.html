@@ -3558,7 +3558,12 @@
         // Enhanced Trading Modal - coins.php ile çalışır
         function openTradingModal(coinId, coinName, currentPrice, direction = 'buy', coinSymbol = '') {
             console.log('🚀 ENHANCED TRADING MODAL AÇILIYOR!', { coinId, coinName, currentPrice, direction, coinSymbol });
+            
             const modal = document.getElementById('tradingModal');
+            if (!modal) {
+                console.error('❌ Trading modal bulunamadı!');
+                return;
+            }
             
             // Global değişkenlere kaydet
             window.currentTradingCoin = {
@@ -3575,37 +3580,56 @@
             
             // Modal'ı göster
             modal.style.display = 'flex';
+            modal.style.opacity = '1';
+            modal.style.visibility = 'visible';
             
             // Coin bilgilerini modal'a yükle
             const symbol = coinSymbol || coinName.substring(0, 3).toUpperCase();
-            document.getElementById('modalCoinName').textContent = coinName;
-            document.getElementById('modalCoinSymbol').textContent = symbol;
-            document.getElementById('modalCoinPrice').textContent = `₺${priceInTL.toLocaleString('tr-TR', {minimumFractionDigits: 2})}`;
+            
+            const modalCoinName = document.getElementById('modalCoinName');
+            const modalCoinSymbol = document.getElementById('modalCoinSymbol');
+            const modalCoinPrice = document.getElementById('modalCoinPrice');
+            
+            if (modalCoinName) modalCoinName.textContent = coinName;
+            if (modalCoinSymbol) modalCoinSymbol.textContent = symbol;
+            if (modalCoinPrice) modalCoinPrice.textContent = `₺${priceInTL.toLocaleString('tr-TR', {minimumFractionDigits: 2})}`;
             
             // DÜZELTME: Modal coin icon'unu dinamik olarak ayarla
             updateModalCoinIcon(symbol);
             
             // Price change göster
             const changeElement = document.getElementById('modalCoinChange');
-            const change = (Math.random() - 0.5) * 10; // Random değişim %
-            changeElement.textContent = `${change >= 0 ? '+' : ''}${change.toFixed(2)}%`;
-            changeElement.className = `price-change ${change >= 0 ? 'positive' : 'negative'}`;
+            if (changeElement) {
+                const change = (Math.random() - 0.5) * 10; // Random değişim %
+                changeElement.textContent = `${change >= 0 ? '+' : ''}${change.toFixed(2)}%`;
+                changeElement.className = `price-change ${change >= 0 ? 'positive' : 'negative'}`;
+            }
             
             // Al/Sat fiyatlarını güncelle (0.1% spread)
             const buyPrice = priceInTL * 1.001;
             const sellPrice = priceInTL * 0.999;
-            document.getElementById('buyPrice').textContent = `₺${buyPrice.toLocaleString('tr-TR', {minimumFractionDigits: 2})}`;
-            document.getElementById('sellPrice').textContent = `₺${sellPrice.toLocaleString('tr-TR', {minimumFractionDigits: 2})}`;
+            
+            const buyPriceElement = document.getElementById('buyPrice');
+            const sellPriceElement = document.getElementById('sellPrice');
+            
+            if (buyPriceElement) buyPriceElement.textContent = `₺${buyPrice.toLocaleString('tr-TR', {minimumFractionDigits: 2})}`;
+            if (sellPriceElement) sellPriceElement.textContent = `₺${sellPrice.toLocaleString('tr-TR', {minimumFractionDigits: 2})}`;
             
             // Summary'de coin fiyatını göster
-            document.getElementById('currentCoinPrice').textContent = `₺${priceInTL.toLocaleString('tr-TR', {minimumFractionDigits: 2})}`;
+            const currentCoinPriceElement = document.getElementById('currentCoinPrice');
+            if (currentCoinPriceElement) {
+                currentCoinPriceElement.textContent = `₺${priceInTL.toLocaleString('tr-TR', {minimumFractionDigits: 2})}`;
+            }
             
             // Quantity suffix'i güncelle
-            document.getElementById('quantitySuffix').textContent = symbol;
+            const quantitySuffixElement = document.getElementById('quantitySuffix');
+            if (quantitySuffixElement) {
+                quantitySuffixElement.textContent = symbol;
+            }
             
             // Global değişkenleri güncelle
-            currentCoinPrice = priceInTL;
-            currentCoinSymbol = symbol;
+            window.currentCoinPrice = priceInTL;
+            window.currentCoinSymbol = symbol;
             
             // Direction'a göre initial state ayarla
             setTradingDirection(direction);
@@ -3616,8 +3640,12 @@
             // Form'u sıfırla
             resetTradingForm();
             
-            // Event listener'ları setup et
-            setupEnhancedTradingModalEvents();
+            // Event listener'ları setup et - timeout ile geciktir
+            setTimeout(() => {
+                setupEnhancedTradingModalEvents();
+            }, 100);
+            
+            console.log('✅ Trading modal açıldı:', window.currentTradingCoin);
         }
         
         // Trading direction ayarla
