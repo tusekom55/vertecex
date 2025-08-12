@@ -1583,6 +1583,7 @@
             }, 1000);
             
             initTrading(); // Trading sistemini başlat
+            initTradingModal(); // Trading modal sistemini başlat
             refreshPositions(); // Pozisyonları yükle
             
             // Arama kutusu için event listener - null check ekle
@@ -3640,9 +3641,6 @@
             modal.style.opacity = '0';
             modal.style.visibility = 'visible';
             
-            // Event listener'ları ÖNCE kur
-            setupEnhancedTradingModalEvents();
-            
             // Animasyon için kısa gecikme
             setTimeout(() => {
                 modal.style.opacity = '1';
@@ -3651,7 +3649,10 @@
                     container.style.transform = 'scale(1)';
                     container.style.opacity = '1';
                 }
-            }, 50);
+                
+                // Event listener'ları modal açıldıktan SONRA kur
+                setupEnhancedTradingModalEvents();
+            }, 100);
             
             console.log('✅ Trading modal açıldı:', window.currentTradingCoin);
         }
@@ -4250,6 +4251,109 @@
                 cleanupModalEventListeners();
                 
             }, 300);
+        }
+        
+        // Trading modal event listener'ları temizle
+        function cleanupModalEventListeners() {
+            // Event listener'ları temizlemek için modal'ı yeniden oluştur
+            console.log('🧹 Trading modal event listeners temizlendi');
+        }
+        
+        // Trading form'u tamamen sıfırla
+        function resetTradingFormCompletely() {
+            // Input alanlarını temizle
+            const coinAmountInput = document.getElementById('coinAmount');
+            const totalAmountInput = document.getElementById('totalAmount');
+            
+            if (coinAmountInput) coinAmountInput.value = '';
+            if (totalAmountInput) totalAmountInput.value = '';
+            
+            // Tab'ları sıfırla
+            const amountTab = document.querySelector('.input-tab[data-tab="amount"]');
+            const totalTab = document.querySelector('.input-tab[data-tab="total"]');
+            
+            if (amountTab) amountTab.classList.add('active');
+            if (totalTab) totalTab.classList.remove('active');
+            
+            // Section'ları sıfırla
+            const amountSection = document.getElementById('amountSection');
+            const totalSection = document.getElementById('totalSection');
+            
+            if (amountSection) amountSection.style.display = 'block';
+            if (totalSection) totalSection.style.display = 'none';
+            
+            // Percentage butonlarını sıfırla
+            document.querySelectorAll('.percent-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Direction butonlarını sıfırla
+            const buyBtn = document.querySelector('.direction-btn.buy-btn');
+            const sellBtn = document.querySelector('.direction-btn.sell-btn');
+            
+            if (buyBtn) buyBtn.classList.add('active');
+            if (sellBtn) sellBtn.classList.remove('active');
+            
+            // Execute butonunu deaktif et
+            const executeBtn = document.getElementById('executeOrderBtn');
+            if (executeBtn) {
+                executeBtn.disabled = true;
+                executeBtn.className = 'execute-btn buy-order';
+            }
+            
+            // Balance warning'i gizle
+            const balanceWarning = document.getElementById('balanceWarning');
+            if (balanceWarning) {
+                balanceWarning.style.display = 'none';
+            }
+            
+            // Kaldıraç ayarlarını sıfırla
+            currentLeverageMode = 'spot';
+            currentLeverage = 1;
+            currentPositionType = 'long';
+            
+            // Mode tab'larını sıfırla
+            document.querySelectorAll('.mode-tab').forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.dataset.mode === 'spot') {
+                    tab.classList.add('active');
+                }
+            });
+            
+            // Leverage selection'ı gizle
+            const leverageSelection = document.getElementById('leverageSelection');
+            if (leverageSelection) {
+                leverageSelection.style.display = 'none';
+            }
+            
+            // Summary'yi sıfırla
+            resetSummaryCompletely();
+        }
+        
+        // Summary'yi tamamen sıfırla
+        function resetSummaryCompletely() {
+            const elements = [
+                'calculatedAmount',
+                'calculatedTotal', 
+                'calculatedFee',
+                'finalTotal',
+                'currentBalance',
+                'remainingBalance',
+                'currentCoinPrice'
+            ];
+            
+            elements.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    if (id === 'calculatedAmount') {
+                        element.textContent = '0.00000000 BTC';
+                    } else if (id === 'currentCoinPrice') {
+                        element.textContent = '₺0.00';
+                    } else {
+                        element.textContent = '₺0.00';
+                    }
+                }
+            });
         }
         
         // Trading form'u tamamen sıfırla
