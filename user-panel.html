@@ -3578,11 +3578,6 @@
             const priceInTL = parseFloat(currentPrice);
             window.currentTradingCoin.priceInTL = priceInTL;
             
-            // Modal'ı göster
-            modal.style.display = 'flex';
-            modal.style.opacity = '1';
-            modal.style.visibility = 'visible';
-            
             // Coin bilgilerini modal'a yükle
             const symbol = coinSymbol || coinName.substring(0, 3).toUpperCase();
             
@@ -3594,7 +3589,7 @@
             if (modalCoinSymbol) modalCoinSymbol.textContent = symbol;
             if (modalCoinPrice) modalCoinPrice.textContent = `₺${priceInTL.toLocaleString('tr-TR', {minimumFractionDigits: 2})}`;
             
-            // DÜZELTME: Modal coin icon'unu dinamik olarak ayarla
+            // Modal coin icon'unu dinamik olarak ayarla
             updateModalCoinIcon(symbol);
             
             // Price change göster
@@ -3640,10 +3635,23 @@
             // Form'u sıfırla
             resetTradingForm();
             
-            // Event listener'ları setup et - timeout ile geciktir
+            // Modal'ı göster - animasyonlu
+            modal.style.display = 'flex';
+            modal.style.opacity = '0';
+            modal.style.visibility = 'visible';
+            
+            // Event listener'ları ÖNCE kur
+            setupEnhancedTradingModalEvents();
+            
+            // Animasyon için kısa gecikme
             setTimeout(() => {
-                setupEnhancedTradingModalEvents();
-            }, 100);
+                modal.style.opacity = '1';
+                const container = modal.querySelector('.modal-container-enhanced');
+                if (container) {
+                    container.style.transform = 'scale(1)';
+                    container.style.opacity = '1';
+                }
+            }, 50);
             
             console.log('✅ Trading modal açıldı:', window.currentTradingCoin);
         }
