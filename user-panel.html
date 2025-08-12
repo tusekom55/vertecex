@@ -3030,8 +3030,12 @@
                     </div>
                     
                     <div class="asset-actions">
-                        <button class="asset-action-btn sell ${item.profit_loss >= 0 ? 'profit-sell' : 'loss-sell'}" onclick="portfolioSellAsset('${item.coin_id}', '${item.coin_adi}', '${item.coin_kodu}', ${item.net_miktar})"
-                                title="${item.coin_kodu} sat (Mevcut: ${parseFloat(item.net_miktar).toFixed(6)}) - ${item.profit_loss >= 0 ? 'Kar' : 'Zarar'}: ${item.profit_loss >= 0 ? '+' : ''}₺${parseFloat(item.profit_loss).toLocaleString('tr-TR', {minimumFractionDigits: 2})}">
+                        <button class="asset-action-btn sell" 
+                                onclick="portfolioSellAsset('${item.coin_id}', '${item.coin_adi}', '${item.coin_kodu}', ${item.net_miktar})"
+                                title="${item.coin_kodu} sat (Mevcut: ${parseFloat(item.net_miktar).toFixed(6)}) - ${item.profit_loss >= 0 ? 'Kar' : 'Zarar'}: ${item.profit_loss >= 0 ? '+' : ''}₺${parseFloat(item.profit_loss).toLocaleString('tr-TR', {minimumFractionDigits: 2})}"
+                                style="background: ${item.profit_loss >= 0 ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'}; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 2px 8px ${item.profit_loss >= 0 ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'};"
+                                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px ${item.profit_loss >= 0 ? 'rgba(16, 185, 129, 0.4)' : 'rgba(239, 68, 68, 0.4)'}'"
+                                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px ${item.profit_loss >= 0 ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'}'">
                             <i class="fas fa-minus"></i> Sat
                         </button>
                     </div>
