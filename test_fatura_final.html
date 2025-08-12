@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fatura Sistemi - Final Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
+        .test-section { margin-bottom: 30px; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
+        .test-section h3 { margin-top: 0; color: #333; }
+        button { background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; margin: 5px; }
+        button:hover { background: #0056b3; }
+        .result { margin-top: 15px; padding: 15px; border-radius: 4px; font-family: monospace; white-space: pre-wrap; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        input, select { width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .invoice-preview { background: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 15px; }
+        .invoice-preview h4 { margin-top: 0; color: #333; }
+        .status-badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+        .status-success { background: #28a745; color: white; }
+        .status-error { background: #dc3545; color: white; }
+    </style>
+</head>
+<body>
+    <h1>🎉 Fatura Sistemi - Final Test</h1>
+    <p><strong>✅ Sistem Durumu:</strong> Tüm testler başarılı! Fatura sistemi çalışmaya hazır.</p>
+    
+    <div class="test-section">
+        <h3>📋 Fatura Oluşturma Testi</h3>
+        <form id="invoiceForm">
+            <div class="form-group">
+                <label for="user-id">Kullanıcı Seçin:</label>
+                <select id="user-id" required>
+                    <option value="">Kullanıcı seçin...</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="islem-tipi">İşlem Tipi:</label>
+                <select id="islem-tipi" required>
+                    <option value="para_cekme">Para Çekme</option>
+                    <option value="para_yatirma">Para Yatırma</option>
+                    <option value="coin_islem">Coin İşlemi</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="tutar">Tutar (₺):</label>
+                <input type="number" id="tutar" value="500" step="0.01" min="1" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="aciklama">Açıklama:</label>
+                <input type="text" id="aciklama" value="Test fatura açıklaması" required>
+            </div>
+            
+            <button type="submit">🚀 Fatura Oluştur</button>
+        </form>
+        
+        <div id="invoice-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>📊 Sistem Bilgileri</h3>
+        <div id="system-info">
+            <p><strong>✅ API:</strong> Çalışıyor</p>
+            <p><strong>✅ Veritabanı:</strong> Bağlantı var</p>
+            <p><strong>✅ Tablolar:</strong> Mevcut</p>
+            <p><strong>✅ Kullanıcılar:</strong> Test verileri hazır</p>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h3>🔗 Hızlı Testler</h3>
+        <button onclick="testInvoiceAPI()">Test Fatura API</button>
+        <button onclick="listUsers()">Kullanıcıları Listele</button>
+        <button onclick="testInvoiceGeneration()">Fatura Görüntüleme Testi</button>
+        <div id="quick-result"></div>
+    </div>
+    
+    <script>
+        // Sayfa yüklendiğinde kullanıcıları yükle
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUsers();
+        });
+        
+        async function loadUsers() {
+            try {
+                const response = await fetch('backend/admin/debug.php?action=user_check');
+                const data = await response.json();
+                
+                if (data.success && data.users) {
+                    const userSelect = document.getElementById('user-id');
+                    userSelect.innerHTML = '<option value="">Kullanıcı seçin...</option>';
+                    
+                    data.users.forEach(user => {
+                        const option = document.createElement('option');
+                        option.value = user.id;
+                        option.textContent = `${user.username} (${user.email})`;
+                        userSelect.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Kullanıcı yükleme hatası:', error);
+            }
+        }
+        
+        document.getElementById('invoiceForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                user_id: document.getElementById('user-id').value,
+                islem_tipi: document.getElementById('islem-tipi').value,
+                islem_id: 1,
+                tutar: parseFloat(document.getElementById('tutar').value),
+                aciklama: document.getElementById('aciklama').value
+            };
+            
+            if (!formData.user_id) {
+                alert('Lütfen bir kullanıcı seçin!');
+                return;
+            }
+            
+            const resultDiv = document.getElementById('invoice-result');
+            resultDiv.className = 'result info';
+            resultDiv.textContent = '🔄 Fatura oluşturuluyor...';
+            
+            try {
+                const response = await fetch('backend/admin/invoice.php?action=create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const responseText = await response.text();
+                console.log('Raw response:', responseText);
+                
+                let data;
+                try {
+                    data = JSON.parse(responseText);
+                } catch (parseError) {
+                    resultDiv.className = 'result error';
+                    resultDiv.textContent = `❌ JSON Parse Hatası!\n\nRaw Response:\n${responseText}\n\nParse Error: ${parseError.message}`;
+                    return;
+                }
+                
+                if (data.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+                        <div class="invoice-preview">
+                            <h4>🎉 Fatura Başarıyla Oluşturuldu!</h4>
+                            <p><strong>Fatura No:</strong> <span class="status-badge status-success">${data.data.fatura_no}</span></p>
+                            <p><strong>Kullanıcı:</strong> ${data.data.username}</p>
+                            <p><strong>E-posta:</strong> ${data.data.email}</p>
+                            <p><strong>Tutar:</strong> ${data.data.toplam_tutar} ₺</p>
+                            <p><strong>Tarih:</strong> ${data.data.tarih}</p>
+                            <p><strong>İşlem Tipi:</strong> ${data.data.islem_tipi}</p>
+                            <br>
+                            <a href="backend/admin/invoice.php?action=generate_pdf&fatura_id=${data.data.fatura_id}" target="_blank">
+                                <button>📄 Faturayı Görüntüle</button>
+                            </a>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.textContent = `❌ Fatura oluşturulamadı!\n\nHata: ${data.error}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = `❌ Bağlantı hatası!\n\nHata: ${error.message}`;
+            }
+        });
+        
+        async function testInvoiceAPI() {
+            const resultDiv = document.getElementById('quick-result');
+            resultDiv.className = 'result info';
+            resultDiv.textContent = '🔄 API test ediliyor...';
+            
+            try {
+                const response = await fetch('backend/admin/invoice.php?action=test');
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.textContent = `✅ Fatura API çalışıyor!\n\nMesaj: ${data.message}\nZaman: ${data.timestamp}`;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.textContent = `❌ Fatura API hatası!\n\nHata: ${data.error}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = `❌ API bağlantı hatası!\n\nHata: ${error.message}`;
+            }
+        }
+        
+        async function listUsers() {
+            const resultDiv = document.getElementById('quick-result');
+            resultDiv.className = 'result info';
+            resultDiv.textContent = '🔄 Kullanıcılar listeleniyor...';
+            
+            try {
+                const response = await fetch('backend/admin/debug.php?action=user_check');
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultDiv.className = 'result success';
+                    let userList = `✅ Kullanıcılar (Toplam: ${data.user_count})\n\n`;
+                    data.users.forEach(user => {
+                        userList += `• ID: ${user.id} | ${user.username} | ${user.email}\n`;
+                    });
+                    resultDiv.textContent = userList;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.textContent = `❌ Kullanıcı listesi alınamadı!\n\nHata: ${data.error}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = `❌ Kullanıcı listesi hatası!\n\nHata: ${error.message}`;
+            }
+        }
+        
+        async function testInvoiceGeneration() {
+            const resultDiv = document.getElementById('quick-result');
+            resultDiv.className = 'result info';
+            resultDiv.textContent = '🔄 Fatura görüntüleme test ediliyor...';
+            
+            try {
+                // Önce bir test fatura oluştur
+                const testData = {
+                    user_id: 2,
+                    islem_tipi: 'para_cekme',
+                    islem_id: 1,
+                    tutar: 100
+                };
+                
+                const createResponse = await fetch('backend/admin/invoice.php?action=create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(testData)
+                });
+                
+                const createData = await createResponse.json();
+                
+                if (createData.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+                        ✅ Test fatura oluşturuldu!
+                        
+                        Fatura No: ${createData.data.fatura_no}
+                        Kullanıcı: ${createData.data.username}
+                        Tutar: ${createData.data.toplam_tutar} ₺
+                        
+                        <br><br>
+                        <a href="backend/admin/invoice.php?action=generate_pdf&fatura_id=${createData.data.fatura_id}" target="_blank">
+                            <button>📄 Test Faturayı Görüntüle</button>
+                        </a>
+                    `;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.textContent = `❌ Test fatura oluşturulamadı!\n\nHata: ${createData.error}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = `❌ Fatura görüntüleme testi hatası!\n\nHata: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html> 

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portföy Hesaplama Testi</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-case {
+            border: 1px solid #ddd;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 5px;
+            background: #f9f9f9;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        .warning { background-color: #fff3cd; color: #856404; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .profit { color: #28a745; }
+        .loss { color: #dc3545; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Portföy Hesaplama Mantığı Testi</h1>
+        <p>Bu test, portföy kar/zarar hesaplama mantığının doğruluğunu kontrol eder.</p>
+        
+        <div id="test-results"></div>
+        
+        <h2>Test Senaryoları</h2>
+        <div id="test-scenarios"></div>
+    </div>
+
+    <script>
+        // Portföy hesaplama fonksiyonu (backend'deki mantığın JavaScript versiyonu)
+        function calculatePortfolioItem(transactions) {
+            // İşlemleri tarihe göre sırala (FIFO için)
+            transactions.sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            let totalBoughtQuantity = 0;
+            let totalBoughtAmount = 0;
+            let totalSoldQuantity = 0;
+            let totalSoldAmount = 0;
+            
+            // Tüm işlemleri hesapla
+            transactions.forEach(tx => {
+                if (tx.type === 'buy') {
+                    totalBoughtQuantity += tx.quantity;
+                    totalBoughtAmount += tx.quantity * tx.price;
+                } else if (tx.type === 'sell') {
+                    totalSoldQuantity += tx.quantity;
+                    totalSoldAmount += tx.quantity * tx.price;
+                }
+            });
+            
+            // Net miktar
+            const netQuantity = totalBoughtQuantity - totalSoldQuantity;
+            
+            if (netQuantity <= 0) {
+                return null; // Portföyde kalmamış
+            }
+            
+            // Ortalama alış fiyatı (sadece alış işlemlerinden)
+            const avgBuyPrice = totalBoughtQuantity > 0 ? totalBoughtAmount / totalBoughtQuantity : 0;
+            
+            // DÜZELTME: Doğru yatırım tutarı hesaplaması
+            let investedValue;
+            if (totalSoldQuantity === 0) {
+                // Hiç satış yapılmamışsa
+                investedValue = netQuantity * avgBuyPrice;
+            } else {
+                // FIFO mantığı: Toplam alış tutarı - Satılan miktarın maliyeti
+                const soldCost = totalSoldQuantity * avgBuyPrice;
+                investedValue = totalBoughtAmount - soldCost;
+                
+                // Negatif değer kontrolü
+                if (investedValue < 0) {
+                    investedValue = netQuantity * avgBuyPrice;
+                }
+            }
+            
+            return {
+                netQuantity,
+                avgBuyPrice,
+                investedValue,
+                totalBoughtQuantity,
+                totalBoughtAmount,
+                totalSoldQuantity,
+                totalSoldAmount
+            };
+        }
+        
+        // Test senaryoları
+        const testCases = [
+            {
+                name: "Senaryo 1: Sadece Alış (Basit)",
+                transactions: [
+                    { type: 'buy', quantity: 100, price: 10, date: '2024-01-01' }
+                ],
+                currentPrice: 12,
+                expected: {
+                    netQuantity: 100,
+                    avgBuyPrice: 10,
+                    investedValue: 1000,
+                    currentValue: 1200,
+                    profitLoss: 200,
+                    profitLossPercent: 20
+                }
+            },
+            {
+                name: "Senaryo 2: Alış + Kısmi Satış",
+                transactions: [
+                    { type: 'buy', quantity: 100, price: 10, date: '2024-01-01' },
+                    { type: 'sell', quantity: 30, price: 15, date: '2024-01-02' }
+                ],
+                currentPrice: 12,
+                expected: {
+                    netQuantity: 70,
+                    avgBuyPrice: 10,
+                    investedValue: 700, // DÜZELTME: 70 * 10 = 700 (kalan miktar için)
+                    currentValue: 840, // 70 * 12
+                    profitLoss: 140,
+                    profitLossPercent: 20
+                }
+            },
+            {
+                name: "Senaryo 3: Çoklu Alış + Satış",
+                transactions: [
+                    { type: 'buy', quantity: 100, price: 10, date: '2024-01-01' },
+                    { type: 'buy', quantity: 50, price: 20, date: '2024-01-02' },
+                    { type: 'sell', quantity: 75, price: 18, date: '2024-01-03' }
+                ],
+                currentPrice: 15,
+                expected: {
+                    netQuantity: 75, // 150 - 75
+                    avgBuyPrice: 13.33, // (100*10 + 50*20) / 150 = 2000/150
+                    investedValue: 1000, // DÜZELTME: 2000 - (75 * 13.33) = 1000
+                    currentValue: 1125, // 75 * 15
+                    profitLoss: 125,
+                    profitLossPercent: 12.5
+                }
+            },
+            {
+                name: "Senaryo 4: Problem Durumu (Yüksek Zarar Görünümü)",
+                transactions: [
+                    { type: 'buy', quantity: 1000, price: 100, date: '2024-01-01' },
+                    { type: 'sell', quantity: 900, price: 50, date: '2024-01-02' }
+                ],
+                currentPrice: 60,
+                expected: {
+                    netQuantity: 100,
+                    avgBuyPrice: 100,
+                    investedValue: 10000, // DÜZELTME: 100000 - (900 * 100) = 10000
+                    currentValue: 6000, // 100 * 60
+                    profitLoss: -4000,
+                    profitLossPercent: -40
+                }
+            }
+        ];
+        
+        function runTests() {
+            const resultsDiv = document.getElementById('test-results');
+            const scenariosDiv = document.getElementById('test-scenarios');
+            
+            let passedTests = 0;
+            let totalTests = testCases.length;
+            
+            testCases.forEach((testCase, index) => {
+                const result = calculatePortfolioItem(testCase.transactions);
+                
+                if (!result) {
+                    scenariosDiv.innerHTML += `
+                        <div class="test-case">
+                            <h3>${testCase.name}</h3>
+                            <div class="result error">❌ Portföyde coin kalmamış</div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Mevcut değer ve kar/zarar hesapla
+                const currentValue = result.netQuantity * testCase.currentPrice;
+                const profitLoss = currentValue - result.investedValue;
+                const profitLossPercent = result.investedValue > 0 ? (profitLoss / result.investedValue) * 100 : 0;
+                
+                // Sonuçları karşılaştır
+                const tolerance = 0.01; // %0.01 tolerans
+                const isCorrect = 
+                    Math.abs(result.netQuantity - testCase.expected.netQuantity) < tolerance &&
+                    Math.abs(result.investedValue - testCase.expected.investedValue) < tolerance * testCase.expected.investedValue &&
+                    Math.abs(profitLossPercent - testCase.expected.profitLossPercent) < tolerance * 100;
+                
+                if (isCorrect) passedTests++;
+                
+                scenariosDiv.innerHTML += `
+                    <div class="test-case">
+                        <h3>${testCase.name} ${isCorrect ? '✅' : '❌'}</h3>
+                        
+                        <h4>İşlemler:</h4>
+                        <table>
+                            <tr><th>Tip</th><th>Miktar</th><th>Fiyat</th><th>Tarih</th></tr>
+                            ${testCase.transactions.map(tx => 
+                                `<tr><td>${tx.type === 'buy' ? 'Alış' : 'Satış'}</td><td>${tx.quantity}</td><td>₺${tx.price}</td><td>${tx.date}</td></tr>`
+                            ).join('')}
+                        </table>
+                        
+                        <h4>Hesaplama Sonuçları:</h4>
+                        <table>
+                            <tr><th>Metrik</th><th>Hesaplanan</th><th>Beklenen</th><th>Durum</th></tr>
+                            <tr>
+                                <td>Net Miktar</td>
+                                <td>${result.netQuantity.toFixed(2)}</td>
+                                <td>${testCase.expected.netQuantity.toFixed(2)}</td>
+                                <td>${Math.abs(result.netQuantity - testCase.expected.netQuantity) < tolerance ? '✅' : '❌'}</td>
+                            </tr>
+                            <tr>
+                                <td>Ortalama Alış Fiyatı</td>
+                                <td>₺${result.avgBuyPrice.toFixed(2)}</td>
+                                <td>₺${testCase.expected.avgBuyPrice.toFixed(2)}</td>
+                                <td>${Math.abs(result.avgBuyPrice - testCase.expected.avgBuyPrice) < tolerance ? '✅' : '❌'}</td>
+                            </tr>
+                            <tr>
+                                <td>Yatırılan Tutar</td>
+                                <td>₺${result.investedValue.toFixed(2)}</td>
+                                <td>₺${testCase.expected.investedValue.toFixed(2)}</td>
+                                <td>${Math.abs(result.investedValue - testCase.expected.investedValue) < tolerance * testCase.expected.investedValue ? '✅' : '❌'}</td>
+                            </tr>
+                            <tr>
+                                <td>Mevcut Değer</td>
+                                <td>₺${currentValue.toFixed(2)}</td>
+                                <td>₺${testCase.expected.currentValue.toFixed(2)}</td>
+                                <td>${Math.abs(currentValue - testCase.expected.currentValue) < tolerance * testCase.expected.currentValue ? '✅' : '❌'}</td>
+                            </tr>
+                            <tr>
+                                <td>Kar/Zarar</td>
+                                <td class="${profitLoss >= 0 ? 'profit' : 'loss'}">₺${profitLoss.toFixed(2)}</td>
+                                <td class="${testCase.expected.profitLoss >= 0 ? 'profit' : 'loss'}">₺${testCase.expected.profitLoss.toFixed(2)}</td>
+                                <td>${Math.abs(profitLoss - testCase.expected.profitLoss) < tolerance * Math.abs(testCase.expected.profitLoss) ? '✅' : '❌'}</td>
+                            </tr>
+                            <tr>
+                                <td>Kar/Zarar %</td>
+                                <td class="${profitLossPercent >= 0 ? 'profit' : 'loss'}">${profitLossPercent.toFixed(2)}%</td>
+                                <td class="${testCase.expected.profitLossPercent >= 0 ? 'profit' : 'loss'}">${testCase.expected.profitLossPercent.toFixed(2)}%</td>
+                                <td>${Math.abs(profitLossPercent - testCase.expected.profitLossPercent) < tolerance * 100 ? '✅' : '❌'}</td>
+                            </tr>
+                        </table>
+                        
+                        <h4>Detaylı Bilgiler:</h4>
+                        <p><strong>Toplam Alış:</strong> ${result.totalBoughtQuantity} adet, ₺${result.totalBoughtAmount.toFixed(2)}</p>
+                        <p><strong>Toplam Satış:</strong> ${result.totalSoldQuantity} adet, ₺${result.totalSoldAmount.toFixed(2)}</p>
+                        <p><strong>Güncel Fiyat:</strong> ₺${testCase.currentPrice}</p>
+                    </div>
+                `;
+            });
+            
+            resultsDiv.innerHTML = `
+                <div class="result ${passedTests === totalTests ? 'success' : 'warning'}">
+                    <h2>Test Sonuçları</h2>
+                    <p><strong>${passedTests}/${totalTests}</strong> test başarılı</p>
+                    ${passedTests === totalTests ? 
+                        '<p>✅ Tüm testler başarılı! Portföy hesaplama mantığı doğru çalışıyor.</p>' : 
+                        '<p>⚠️ Bazı testler başarısız. Hesaplama mantığında düzeltme gerekli.</p>'
+                    }
+                </div>
+            `;
+        }
+        
+        // Sayfa yüklendiğinde testleri çalıştır
+        document.addEventListener('DOMContentLoaded', runTests);
+    </script>
+</body>
+</html>

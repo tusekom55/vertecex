@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hosting Test - Fatura API</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
+        .test-section { margin-bottom: 30px; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
+        .test-section h3 { margin-top: 0; color: #333; }
+        button { background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; margin: 5px; }
+        button:hover { background: #0056b3; }
+        .result { margin-top: 15px; padding: 15px; border-radius: 4px; font-family: monospace; white-space: pre-wrap; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        input, select { width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>Hosting Test - Fatura API</h1>
+    
+    <div class="test-section">
+        <h3>1. API Bağlantı Testi</h3>
+        <button onclick="testConnection()">API Bağlantısını Test Et</button>
+        <div id="connection-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>2. Veritabanı Testi</h3>
+        <button onclick="testDatabase()">Veritabanı Bağlantısını Test Et</button>
+        <div id="database-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>3. Kullanıcı Testi</h3>
+        <div class="form-group">
+            <label for="test-user-id">Kullanıcı ID:</label>
+            <input type="number" id="test-user-id" value="2" min="1">
+        </div>
+        <button onclick="testUser()">Kullanıcıyı Test Et</button>
+        <div id="user-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>4. Fatura Oluşturma Testi</h3>
+        <div class="form-group">
+            <label for="user-id">Kullanıcı ID:</label>
+            <input type="number" id="user-id" value="2" required>
+        </div>
+        <div class="form-group">
+            <label for="islem-tipi">İşlem Tipi:</label>
+            <select id="islem-tipi" required>
+                <option value="para_cekme">Para Çekme</option>
+                <option value="para_yatirma">Para Yatırma</option>
+                <option value="coin_islem">Coin İşlemi</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="islem-id">İşlem ID:</label>
+            <input type="number" id="islem-id" value="1" required>
+        </div>
+        <div class="form-group">
+            <label for="tutar">Tutar:</label>
+            <input type="number" id="tutar" value="500" step="0.01" required>
+        </div>
+        <button onclick="createInvoice()">Fatura Oluştur</button>
+        <div id="invoice-result"></div>
+    </div>
+    
+    <script>
+        async function makeRequest(url, method = 'GET', data = null) {
+            try {
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                };
+                
+                if (data) {
+                    options.body = JSON.stringify(data);
+                }
+                
+                console.log('Making request to:', url);
+                console.log('Options:', options);
+                
+                const response = await fetch(url, options);
+                console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers);
+                
+                const responseText = await response.text();
+                console.log('Raw response:', responseText);
+                
+                return {
+                    status: response.status,
+                    text: responseText,
+                    success: response.ok
+                };
+            } catch (error) {
+                console.error('Request error:', error);
+                return {
+                    status: 0,
+                    text: error.message,
+                    success: false
+                };
+            }
+        }
+        
+        function showResult(elementId, result, isSuccess = true) {
+            const element = document.getElementById(elementId);
+            element.className = `result ${isSuccess ? 'success' : 'error'}`;
+            element.textContent = result;
+        }
+        
+        async function testConnection() {
+            const result = await makeRequest('backend/admin/invoice.php?action=test');
+            if (result.success && result.text.includes('success')) {
+                showResult('connection-result', '✅ API bağlantısı başarılı!\n\n' + result.text);
+            } else {
+                showResult('connection-result', '❌ API bağlantısı başarısız!\n\nStatus: ' + result.status + '\nResponse: ' + result.text, false);
+            }
+        }
+        
+        async function testDatabase() {
+            const result = await makeRequest('backend/admin/invoice.php?action=test_db');
+            if (result.success && result.text.includes('success')) {
+                showResult('database-result', '✅ Veritabanı bağlantısı başarılı!\n\n' + result.text);
+            } else {
+                showResult('database-result', '❌ Veritabanı bağlantısı başarısız!\n\nStatus: ' + result.status + '\nResponse: ' + result.text, false);
+            }
+        }
+        
+        async function testUser() {
+            const userId = document.getElementById('test-user-id').value;
+            const result = await makeRequest(`backend/admin/invoice.php?action=test_user&user_id=${userId}`);
+            if (result.success && result.text.includes('success')) {
+                showResult('user-result', '✅ Kullanıcı bulundu!\n\n' + result.text);
+            } else {
+                showResult('user-result', '❌ Kullanıcı bulunamadı!\n\nStatus: ' + result.status + '\nResponse: ' + result.text, false);
+            }
+        }
+        
+        async function createInvoice() {
+            const formData = {
+                user_id: document.getElementById('user-id').value,
+                islem_tipi: document.getElementById('islem-tipi').value,
+                islem_id: document.getElementById('islem-id').value,
+                tutar: document.getElementById('tutar').value
+            };
+            
+            const result = await makeRequest('backend/admin/invoice.php?action=create', 'POST', formData);
+            
+            if (result.success) {
+                try {
+                    const data = JSON.parse(result.text);
+                    if (data.success) {
+                        showResult('invoice-result', `✅ Fatura başarıyla oluşturuldu!\n\nFatura No: ${data.data.fatura_no}\nKullanıcı: ${data.data.username}\nTutar: ${data.data.toplam_tutar} ₺\nTarih: ${data.data.tarih}`);
+                    } else {
+                        showResult('invoice-result', '❌ Fatura oluşturulamadı!\n\nHata: ' + data.error, false);
+                    }
+                } catch (parseError) {
+                    showResult('invoice-result', '❌ JSON parse hatası!\n\nRaw Response:\n' + result.text + '\n\nParse Error: ' + parseError.message, false);
+                }
+            } else {
+                showResult('invoice-result', '❌ Bağlantı hatası!\n\nStatus: ' + result.status + '\nResponse: ' + result.text, false);
+            }
+        }
+    </script>
+</body>
+</html> 

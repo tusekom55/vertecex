@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hosting Debug - Detaylı Hata Ayıklama</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 1000px; margin: 0 auto; }
+        .debug-section { margin-bottom: 30px; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
+        .debug-section h3 { margin-top: 0; color: #333; }
+        button { background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; margin: 5px; }
+        button:hover { background: #0056b3; }
+        .result { margin-top: 15px; padding: 15px; border-radius: 4px; font-family: monospace; white-space: pre-wrap; max-height: 400px; overflow-y: auto; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .warning { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        .loading { background: #e2e3e5; color: #383d41; border: 1px solid #d6d8db; }
+        .json-display { background: #f8f9fa; padding: 10px; border-radius: 4px; margin-top: 10px; }
+        .status-indicator { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 8px; }
+        .status-ok { background: #28a745; }
+        .status-error { background: #dc3545; }
+        .status-warning { background: #ffc107; }
+    </style>
+</head>
+<body>
+    <h1>Hosting Debug - Detaylı Hata Ayıklama</h1>
+    
+    <div class="debug-section">
+        <h3>1. Basit API Testi</h3>
+        <button onclick="testSimple()">Basit API Testi</button>
+        <div id="simple-result"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h3>2. PHP Bilgileri</h3>
+        <button onclick="testPhpInfo()">PHP Bilgilerini Kontrol Et</button>
+        <div id="php-result"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h3>3. Dosya Kontrolü</h3>
+        <button onclick="testFileCheck()">Dosyaları Kontrol Et</button>
+        <div id="file-result"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h3>4. Veritabanı Bağlantısı</h3>
+        <button onclick="testDatabase()">Veritabanı Bağlantısını Test Et</button>
+        <div id="db-result"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h3>5. Tablo Kontrolü</h3>
+        <button onclick="testTables()">Tabloları Kontrol Et</button>
+        <div id="table-result"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h3>6. Kullanıcı Kontrolü</h3>
+        <button onclick="testUsers()">Kullanıcıları Kontrol Et</button>
+        <div id="user-result"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h3>7. Tam Sistem Testi</h3>
+        <button onclick="runFullTest()">Tüm Testleri Çalıştır</button>
+        <div id="full-result"></div>
+    </div>
+    
+    <script>
+        async function makeRequest(url) {
+            try {
+                console.log('Making request to:', url);
+                const response = await fetch(url);
+                console.log('Response status:', response.status);
+                
+                const responseText = await response.text();
+                console.log('Raw response:', responseText);
+                
+                return {
+                    status: response.status,
+                    text: responseText,
+                    success: response.ok
+                };
+            } catch (error) {
+                console.error('Request error:', error);
+                return {
+                    status: 0,
+                    text: error.message,
+                    success: false
+                };
+            }
+        }
+        
+        function showResult(elementId, result, isSuccess = true, isJson = false) {
+            const element = document.getElementById(elementId);
+            element.className = `result ${isSuccess ? 'success' : 'error'}`;
+            
+            if (isJson && isSuccess) {
+                try {
+                    const data = JSON.parse(result);
+                    element.innerHTML = `
+                        <div class="json-display">
+                            <strong>JSON Response:</strong>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    `;
+                } catch (e) {
+                    element.textContent = result;
+                }
+            } else {
+                element.textContent = result;
+            }
+        }
+        
+        async function testSimple() {
+            const result = await makeRequest('backend/admin/debug.php?action=simple_test');
+            if (result.success) {
+                showResult('simple-result', result.text, true, true);
+            } else {
+                showResult('simple-result', `❌ Basit test başarısız!\n\nStatus: ${result.status}\nResponse: ${result.text}`, false);
+            }
+        }
+        
+        async function testPhpInfo() {
+            const result = await makeRequest('backend/admin/debug.php?action=php_info');
+            if (result.success) {
+                showResult('php-result', result.text, true, true);
+            } else {
+                showResult('php-result', `❌ PHP bilgileri alınamadı!\n\nStatus: ${result.status}\nResponse: ${result.text}`, false);
+            }
+        }
+        
+        async function testFileCheck() {
+            const result = await makeRequest('backend/admin/debug.php?action=file_check');
+            if (result.success) {
+                showResult('file-result', result.text, true, true);
+            } else {
+                showResult('file-result', `❌ Dosya kontrolü başarısız!\n\nStatus: ${result.status}\nResponse: ${result.text}`, false);
+            }
+        }
+        
+        async function testDatabase() {
+            const result = await makeRequest('backend/admin/debug.php?action=db_test');
+            if (result.success) {
+                showResult('db-result', result.text, true, true);
+            } else {
+                showResult('db-result', `❌ Veritabanı bağlantısı başarısız!\n\nStatus: ${result.status}\nResponse: ${result.text}`, false);
+            }
+        }
+        
+        async function testTables() {
+            const result = await makeRequest('backend/admin/debug.php?action=table_check');
+            if (result.success) {
+                showResult('table-result', result.text, true, true);
+            } else {
+                showResult('table-result', `❌ Tablo kontrolü başarısız!\n\nStatus: ${result.status}\nResponse: ${result.text}`, false);
+            }
+        }
+        
+        async function testUsers() {
+            const result = await makeRequest('backend/admin/debug.php?action=user_check');
+            if (result.success) {
+                showResult('user-result', result.text, true, true);
+            } else {
+                showResult('user-result', `❌ Kullanıcı kontrolü başarısız!\n\nStatus: ${result.status}\nResponse: ${result.text}`, false);
+            }
+        }
+        
+        async function runFullTest() {
+            const fullResult = document.getElementById('full-result');
+            fullResult.className = 'result loading';
+            fullResult.textContent = '🔄 Tam sistem testi çalışıyor...';
+            
+            const tests = [
+                { name: 'Basit API', func: testSimple },
+                { name: 'PHP Bilgileri', func: testPhpInfo },
+                { name: 'Dosya Kontrolü', func: testFileCheck },
+                { name: 'Veritabanı', func: testDatabase },
+                { name: 'Tablolar', func: testTables },
+                { name: 'Kullanıcılar', func: testUsers }
+            ];
+            
+            let results = [];
+            
+            for (const test of tests) {
+                try {
+                    const result = await makeRequest(`backend/admin/debug.php?action=${test.name.toLowerCase().replace(' ', '_')}`);
+                    const status = result.success ? '✅' : '❌';
+                    results.push(`${status} ${test.name}: ${result.success ? 'Başarılı' : 'Başarısız'}`);
+                    
+                    if (!result.success) {
+                        results.push(`   Hata: ${result.text}`);
+                    }
+                } catch (error) {
+                    results.push(`❌ ${test.name}: Hata - ${error.message}`);
+                }
+            }
+            
+            fullResult.className = 'result success';
+            fullResult.textContent = results.join('\n');
+        }
+    </script>
+</body>
+</html> 

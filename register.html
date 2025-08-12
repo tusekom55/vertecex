@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Üye Ol - GlobalTradePro</title>
+    <meta name="description" content="GlobalTradePro'ya üye olun ve dünya çapındaki yatırım fırsatlarından yararlanın.">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="styles.css?v=2024122908">
+    <link rel="stylesheet" href="auth-styles-new.css?v=2024122908">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-chart-line"></i>
+                <span>GlobalTradePro</span>
+            </div>
+            
+            <div class="nav-menu" id="nav-menu">
+                <div class="nav-links">
+                    <a href="index.html" class="nav-link">Ana Sayfa</a>
+                    <a href="index.html#yatirim-araclari" class="nav-link">Yatırım Araçları</a>
+                    <a href="index.html#platformlar" class="nav-link">Platformlar</a>
+                    <a href="index.html#hesaplar" class="nav-link">Hesaplar</a>
+                    <a href="index.html#egitim" class="nav-link">Eğitim</a>
+                </div>
+                
+                <div class="nav-buttons">
+                    <a href="login.html" class="btn-login">Giriş</a>
+                    <button class="btn-start active">Üye Ol</button>
+                </div>
+            </div>
+            
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Register Section -->
+    <section class="auth-section">
+        <div class="auth-background"></div>
+        <div class="auth-container">
+            <div class="auth-content">
+                <!-- Sol Taraf - Bilgiler -->
+                <div class="auth-info">
+                    <div class="auth-info-content">
+                        <h2>Yatırım Dünyasına Katılın!</h2>
+                        <p>Sadece birkaç dakikada hesabınızı oluşturun ve küresel pazarlarda işlem yapmaya başlayın.</p>
+                        
+                        <div class="auth-features">
+                            <div class="feature-item">
+                                <i class="fas fa-gift"></i>
+                                <span>$500'a Varan %100 Bonus</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-graduation-cap"></i>
+                                <span>Ücretsiz Eğitim Materyalleri</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-mobile-alt"></i>
+                                <span>Mobil Trading Uygulaması</span>
+                            </div>
+                        </div>
+                        
+                        <div class="auth-benefits">
+                            <h3>Neler Kazanacaksınız?</h3>
+                            <ul>
+                                <li><i class="fas fa-check"></i> Sıfır komisyon ile işlem</li>
+                                <li><i class="fas fa-check"></i> Gerçek zamanlı piyasa analizi</li>
+                                <li><i class="fas fa-check"></i> Profesyonel trading araçları</li>
+                                <li><i class="fas fa-check"></i> 24/7 müşteri desteği</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sağ Taraf - Register Form -->
+                <div class="auth-form-container">
+                    <div class="auth-form">
+                        <div class="form-header">
+                            <h1>Ücretsiz Hesap Oluşturun</h1>
+                            <p>Başlamak için aşağıdaki bilgileri doldurun</p>
+                        </div>
+
+                        <form class="register-form" id="registerForm">
+                            <div id="registerResult" class="result-message"></div>
+                            
+                            <div class="form-group">
+                                <label for="username">
+                                    <i class="fas fa-user-circle"></i>
+                                    Kullanıcı Adı
+                                </label>
+                                <input 
+                                    type="text" 
+                                    id="username" 
+                                    name="username" 
+                                    placeholder="Kullanıcı adınızı seçin"
+                                    required
+                                >
+                                <span class="error-message" id="usernameError"></span>
+                                <small class="help-text">En az 3 karakter, sadece harf, rakam ve alt çizgi</small>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="firstName">
+                                        <i class="fas fa-user"></i>
+                                        Ad
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        id="firstName" 
+                                        name="firstName" 
+                                        placeholder="Adınız"
+                                        required
+                                    >
+                                    <span class="error-message" id="firstNameError"></span>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="lastName">
+                                        <i class="fas fa-user"></i>
+                                        Soyad
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        id="lastName" 
+                                        name="lastName" 
+                                        placeholder="Soyadınız"
+                                        required
+                                    >
+                                    <span class="error-message" id="lastNameError"></span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="email">
+                                    <i class="fas fa-envelope"></i>
+                                    Email Adresi (İsteğe bağlı)
+                                </label>
+                                <input 
+                                    type="email" 
+                                    id="email" 
+                                    name="email" 
+                                    placeholder="ornek@email.com (boş bırakılabilir)"
+                                >
+                                <span class="error-message" id="emailError"></span>
+                                <small class="help-text">Boş bırakırsanız otomatik oluşturulur</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="password">
+                                    <i class="fas fa-lock"></i>
+                                    Şifre (En az 8 karakter)
+                                </label>
+                                <div class="password-input">
+                                    <input 
+                                        type="password" 
+                                        id="password" 
+                                        name="password" 
+                                        placeholder="En az 8 karakter"
+                                        required
+                                    >
+                                    <button type="button" class="password-toggle" id="passwordToggle">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                                <div class="password-strength" id="passwordStrength">
+                                    <div class="strength-bar">
+                                        <div class="strength-fill"></div>
+                                    </div>
+                                    <span class="strength-text">Şifre gücü</span>
+                                </div>
+                                <span class="error-message" id="passwordError"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="confirmPassword">
+                                    <i class="fas fa-lock"></i>
+                                    Şifre Tekrar
+                                </label>
+                                <div class="password-input">
+                                    <input 
+                                        type="password" 
+                                        id="confirmPassword" 
+                                        name="confirmPassword" 
+                                        placeholder="Şifrenizi tekrar girin"
+                                        required
+                                    >
+                                    <button type="button" class="password-toggle" id="confirmPasswordToggle">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                                <span class="error-message" id="confirmPasswordError"></span>
+                            </div>
+
+                            <div class="form-checkbox">
+                                <label class="checkbox-container">
+                                    <input type="checkbox" id="terms" required>
+                                    <span class="checkmark"></span>
+                                    <a href="#terms" target="_blank">Kullanım Şartları</a> ve <a href="#privacy" target="_blank">Gizlilik Politikası</a>'nı okudum ve kabul ediyorum
+                                </label>
+                                <span class="error-message" id="termsError"></span>
+                            </div>
+
+                            <button type="submit" class="btn-submit" id="registerBtn">
+                                <span class="btn-text">Ücretsiz Hesap Oluştur</span>
+                                <span class="btn-loading" style="display: none;">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    Hesap oluşturuluyor...
+                                </span>
+                            </button>
+
+                            <div class="form-divider">
+                                <span>veya</span>
+                            </div>
+
+                            <div class="social-login">
+                                <button type="button" class="social-btn google-btn">
+                                    <i class="fab fa-google"></i>
+                                    Google ile Kayıt Ol
+                                </button>
+                                <button type="button" class="social-btn facebook-btn">
+                                    <i class="fab fa-facebook-f"></i>
+                                    Facebook ile Kayıt Ol
+                                </button>
+                            </div>
+
+                            <div class="form-footer">
+                                <p>Zaten hesabınız var mı? <a href="login.html">Giriş Yap</a></p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer (Simplified) -->
+    <footer class="auth-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-links">
+                    <a href="#privacy">Gizlilik Politikası</a>
+                    <a href="#terms">Kullanım Şartları</a>
+                    <a href="#support">Destek</a>
+                    <a href="#contact">İletişim</a>
+                </div>
+                <div class="footer-copy">
+                    <p>&copy; 2024 GlobalTradePro. Tüm hakları saklıdır.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="auth-script.js"></script>
+    <script>
+    // Gelişmiş kayıt formu işlevi
+    document.addEventListener('DOMContentLoaded', function() {
+      const registerForm = document.getElementById('registerForm');
+      if(registerForm) {
+        // Mevcut event listener'ı kaldır ve yeni ekle
+        registerForm.onsubmit = null;
+        
+        // Real-time validasyon
+        const firstName = document.getElementById('firstName');
+        const lastName = document.getElementById('lastName');
+        const username = document.getElementById('username');
+        const email = document.getElementById('email');
+        const password = document.getElementById('password');
+        const confirmPassword = document.getElementById('confirmPassword');
+        
+        // Ad validasyonu
+        firstName.addEventListener('input', function() {
+          validateName(this, 'Ad');
+        });
+        
+        // Soyad validasyonu
+        lastName.addEventListener('input', function() {
+          validateName(this, 'Soyad');
+        });
+        
+        // Kullanıcı adı validasyonu
+        username.addEventListener('input', function() {
+          validateUsername(this);
+        });
+        
+        // Email validasyonu (isteğe bağlı)
+        email.addEventListener('input', function() {
+          if (this.value.trim()) {
+            validateEmail(this);
+          } else {
+            clearError(this);
+          }
+        });
+        
+        // Şifre validasyonu
+        password.addEventListener('input', function() {
+          validatePassword(this);
+          if (confirmPassword.value) {
+            validateConfirmPassword(confirmPassword, this);
+          }
+        });
+        
+        // Şifre tekrar validasyonu
+        confirmPassword.addEventListener('input', function() {
+          validateConfirmPassword(this, password);
+        });
+        
+        // Form gönderimi
+        registerForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          
+          // Form verilerini al
+          var firstNameVal = firstName.value.trim();
+          var lastNameVal = lastName.value.trim();
+          var emailVal = email.value.trim();
+          var passwordVal = password.value;
+          var confirmPasswordVal = confirmPassword.value;
+          var terms = document.getElementById('terms').checked;
+          
+          var resultDiv = document.getElementById('registerResult');
+          var submitBtn = document.getElementById('registerBtn');
+          var btnText = submitBtn.querySelector('.btn-text');
+          var btnLoading = submitBtn.querySelector('.btn-loading');
+          
+          // Tüm alanları validate et
+          var isValid = true;
+          
+          if (!validateName(firstName, 'Ad')) isValid = false;
+          if (!validateName(lastName, 'Soyad')) isValid = false;
+          if (!validateUsername(username)) isValid = false;
+          if (emailVal && !validateEmail(email)) isValid = false;
+          if (!validatePassword(password)) isValid = false;
+          if (!validateConfirmPassword(confirmPassword, password)) isValid = false;
+          if (!validateTerms()) isValid = false;
+          
+          if (!isValid) {
+            resultDiv.innerText = 'Lütfen tüm alanları doğru şekilde doldurun';
+            resultDiv.style.color = '#ef4444';
+            return;
+          }
+          
+          // Loading durumu
+          btnText.style.display = 'none';
+          btnLoading.style.display = 'flex';
+          submitBtn.disabled = true;
+          
+          // Email boşsa otomatik oluştur
+          if (!emailVal) {
+            emailVal = username.value.trim().toLowerCase() + '@test.com';
+          }
+          
+          // Backend'e gönder
+          var formData = new FormData();
+          formData.append('username', username.value.trim());
+          formData.append('email', emailVal);
+          formData.append('password', passwordVal);
+          
+          resultDiv.innerText = 'Kayıt yapılıyor...';
+          resultDiv.style.color = '#2563eb';
+          
+          fetch('backend/public/register.php', {
+            method: 'POST',
+            credentials: 'include',
+            body: formData
+          })
+          .then(response => response.json())
+          .then(data => {
+            resultDiv.innerText = data.message;
+            resultDiv.style.color = data.success ? '#22c55e' : '#ef4444';
+            
+            if(data.success) {
+              setTimeout(function(){ 
+                window.location.href = 'login.html'; 
+              }, 1500);
+            } else {
+              // Reset button
+              btnText.style.display = 'block';
+              btnLoading.style.display = 'none';
+              submitBtn.disabled = false;
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            resultDiv.innerText = 'Bağlantı hatası oluştu. Lütfen tekrar deneyin.';
+            resultDiv.style.color = '#ef4444';
+            
+            // Reset button
+            btnText.style.display = 'block';
+            btnLoading.style.display = 'none';
+            submitBtn.disabled = false;
+          });
+        });
+      }
+      
+      // Validasyon fonksiyonları
+      function validateName(input, fieldName) {
+        const value = input.value.trim();
+        const errorElement = document.getElementById(input.id + 'Error');
+        
+        if (!value) {
+          showError(input, errorElement, fieldName + ' zorunludur');
+          return false;
+        } else if (value.length < 2) {
+          showError(input, errorElement, fieldName + ' en az 2 karakter olmalıdır');
+          return false;
+        } else if (value.length > 50) {
+          showError(input, errorElement, fieldName + ' en fazla 50 karakter olabilir');
+          return false;
+        } else if (!/^[a-zA-ZğüşıöçĞÜŞİÖÇ\s]+$/.test(value)) {
+          showError(input, errorElement, fieldName + ' sadece harf içerebilir');
+          return false;
+        } else {
+          showSuccess(input, errorElement);
+          return true;
+        }
+      }
+      
+      function validateUsername(input) {
+        const value = input.value.trim();
+        const errorElement = document.getElementById(input.id + 'Error');
+        const usernameRegex = /^[a-zA-Z0-9_]+$/;
+        
+        if (!value) {
+          showError(input, errorElement, 'Kullanıcı adı zorunludur');
+          return false;
+        } else if (value.length < 3) {
+          showError(input, errorElement, 'Kullanıcı adı en az 3 karakter olmalıdır');
+          return false;
+        } else if (value.length > 30) {
+          showError(input, errorElement, 'Kullanıcı adı en fazla 30 karakter olabilir');
+          return false;
+        } else if (!usernameRegex.test(value)) {
+          showError(input, errorElement, 'Sadece harf, rakam ve alt çizgi kullanabilirsiniz');
+          return false;
+        } else {
+          showSuccess(input, errorElement);
+          return true;
+        }
+      }
+      
+      function validateEmail(input) {
+        const value = input.value.trim();
+        const errorElement = document.getElementById(input.id + 'Error');
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        
+        if (value && !emailRegex.test(value)) {
+          showError(input, errorElement, 'Geçerli bir email adresi girin');
+          return false;
+        } else {
+          showSuccess(input, errorElement);
+          return true;
+        }
+      }
+      
+      function validatePassword(input) {
+        const value = input.value;
+        const errorElement = document.getElementById(input.id + 'Error');
+        
+        if (!value) {
+          showError(input, errorElement, 'Şifre zorunludur');
+          return false;
+        } else if (value.length < 8) {
+          showError(input, errorElement, 'Şifre en az 8 karakter olmalıdır');
+          return false;
+        } else {
+          showSuccess(input, errorElement);
+          return true;
+        }
+      }
+      
+      function validateConfirmPassword(input, passwordInput) {
+        const value = input.value;
+        const passwordValue = passwordInput.value;
+        const errorElement = document.getElementById(input.id + 'Error');
+        
+        if (!value) {
+          showError(input, errorElement, 'Şifre tekrarı zorunludur');
+          return false;
+        } else if (value !== passwordValue) {
+          showError(input, errorElement, 'Şifreler eşleşmiyor');
+          return false;
+        } else {
+          showSuccess(input, errorElement);
+          return true;
+        }
+      }
+      
+      function validateTerms() {
+        const termsCheckbox = document.getElementById('terms');
+        const errorElement = document.getElementById('termsError');
+        
+        if (!termsCheckbox.checked) {
+          showError(termsCheckbox, errorElement, 'Kullanım şartlarını kabul etmelisiniz');
+          return false;
+        } else {
+          showSuccess(termsCheckbox, errorElement);
+          return true;
+        }
+      }
+      
+      function showError(input, errorElement, message) {
+        input.style.borderColor = '#ef4444';
+        if (errorElement) {
+          errorElement.textContent = message;
+          errorElement.style.display = 'block';
+          errorElement.style.color = '#ef4444';
+        }
+      }
+      
+      function showSuccess(input, errorElement) {
+        input.style.borderColor = '#22c55e';
+        if (errorElement) {
+          errorElement.textContent = '';
+          errorElement.style.display = 'none';
+        }
+      }
+      
+      function clearError(input) {
+        input.style.borderColor = '';
+        const errorElement = document.getElementById(input.id + 'Error');
+        if (errorElement) {
+          errorElement.textContent = '';
+          errorElement.style.display = 'none';
+        }
+      }
+    });
+    </script>
+</body>
+</html>

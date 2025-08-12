@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
+        .result { background: #f5f5f5; padding: 10px; margin: 10px 0; border-radius: 3px; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <h1>API Test Sayfası</h1>
+    
+    <div class="test-section">
+        <h3>Dashboard Test</h3>
+        <button onclick="testAPI('dashboard')">Dashboard Test Et</button>
+        <div id="dashboard-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Users Test</h3>
+        <button onclick="testAPI('users')">Users Test Et</button>
+        <div id="users-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Withdrawals Test</h3>
+        <button onclick="testAPI('withdrawals')">Withdrawals Test Et</button>
+        <div id="withdrawals-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Invoices Test</h3>
+        <button onclick="testAPI('invoices')">Invoices Test Et</button>
+        <div id="invoices-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Settings Test</h3>
+        <button onclick="testAPI('settings')">Settings Test Et</button>
+        <div id="settings-result" class="result"></div>
+    </div>
+
+    <script>
+        async function testAPI(action) {
+            const resultDiv = document.getElementById(action + '-result');
+            resultDiv.innerHTML = 'Yükleniyor...';
+            
+            const url = `backend/admin/test_api.php?action=${action}`;
+            console.log('=== TEST API DEBUG ===');
+            console.log('Action parameter:', action);
+            console.log('Action type:', typeof action);
+            console.log('Action length:', action.length);
+            console.log('Full URL:', url);
+            
+            try {
+                console.log('Sending fetch request...');
+                const response = await fetch(url);
+                console.log('Response received');
+                console.log('Response status:', response.status);
+                console.log('Response status text:', response.statusText);
+                console.log('Response URL:', response.url);
+                
+                const responseText = await response.text();
+                console.log('Raw response text:', responseText);
+                
+                let data;
+                try {
+                    data = JSON.parse(responseText);
+                    console.log('Parsed JSON data:', data);
+                } catch (parseError) {
+                    console.error('JSON parse error:', parseError);
+                    data = { error: 'JSON parse error', raw: responseText };
+                }
+                
+                resultDiv.innerHTML = `
+                    <strong>URL:</strong> ${url}<br>
+                    <strong>Status:</strong> ${response.status}<br>
+                    <strong>Status Text:</strong> ${response.statusText}<br>
+                    <strong>Action:</strong> ${action}<br>
+                    <strong>Data:</strong> <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+            } catch (error) {
+                console.error('Fetch error:', error);
+                resultDiv.innerHTML = `
+                    <strong>URL:</strong> ${url}<br>
+                    <strong>Action:</strong> ${action}<br>
+                    <strong>Error:</strong> ${error.message}<br>
+                    <strong>Stack:</strong> <pre>${error.stack}</pre>
+                `;
+            }
+        }
+    </script>
+</body>
+</html> 

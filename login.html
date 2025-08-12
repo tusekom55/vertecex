@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giriş Yap - GlobalTradePro</title>
+    <meta name="description" content="GlobalTradePro hesabınıza güvenli giriş yapın. Yatırım dünyasına adım atın.">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="styles.css?v=2024122908">
+    <link rel="stylesheet" href="auth-styles.css?v=2024122908">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-chart-line"></i>
+                <span>GlobalTradePro</span>
+            </div>
+            
+            <div class="nav-menu" id="nav-menu">
+                <div class="nav-links">
+                    <a href="index.html" class="nav-link">Ana Sayfa</a>
+                    <a href="index.html#yatirim-araclari" class="nav-link">Yatırım Araçları</a>
+                    <a href="index.html#platformlar" class="nav-link">Platformlar</a>
+                    <a href="index.html#hesaplar" class="nav-link">Hesaplar</a>
+                    <a href="index.html#egitim" class="nav-link">Eğitim</a>
+                </div>
+                
+                <div class="nav-buttons">
+                    <button class="btn-login active">Giriş</button>
+                    <a href="register.html" class="btn-start">Üye Ol</a>
+                </div>
+            </div>
+            
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Login Section -->
+    <section class="auth-section">
+        <div class="auth-background"></div>
+        <div class="auth-container">
+            <div class="auth-content">
+                <!-- Sol Taraf - Bilgiler -->
+                <div class="auth-info">
+                    <div class="auth-info-content">
+                        <h2>Hoş Geldiniz!</h2>
+                        <p>GlobalTradePro'ya giriş yaparak dünya çapındaki yatırım fırsatlarına anında erişim sağlayın.</p>
+                        
+                        <div class="auth-features">
+                            <div class="feature-item">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>%100 Güvenli İşlem</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-clock"></i>
+                                <span>7/24 Canlı Destek</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-chart-trending-up"></i>
+                                <span>Real-time Piyasa Verileri</span>
+                            </div>
+                        </div>
+                        
+                        <div class="auth-stats">
+                            <div class="stat-item">
+                                <h3>15M+</h3>
+                                <p>Aktif Kullanıcı</p>
+                            </div>
+                            <div class="stat-item">
+                                <h3>50+</h3>
+                                <p>Yatırım Aracı</p>
+                            </div>
+                            <div class="stat-item">
+                                <h3>%99.9</h3>
+                                <p>Uptime Garantisi</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sağ Taraf - Login Form -->
+                <div class="auth-form-container">
+                    <div class="auth-form">
+                        <div class="form-header">
+                            <h1>Hesabınıza Giriş Yapın</h1>
+                            <p>Kullanıcı adınız ve şifrenizle giriş yapın</p>
+                        </div>
+
+                        <div id="loginResult" style="margin-bottom:10px;color:#c00;font-weight:bold;"></div>
+
+                        <form class="login-form" id="loginForm">
+                            <div class="form-group">
+                                <label for="username">
+                                    <i class="fas fa-user"></i>
+                                    Kullanıcı Adı
+                                </label>
+                                <input 
+                                    type="text" 
+                                    id="username" 
+                                    name="username" 
+                                    placeholder="Kullanıcı adınız"
+                                    required
+                                >
+                                <span class="error-message" id="usernameError"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="password">
+                                    <i class="fas fa-lock"></i>
+                                    Şifre
+                                </label>
+                                <div class="password-input">
+                                    <input 
+                                        type="password" 
+                                        id="password" 
+                                        name="password" 
+                                        placeholder="Şifrenizi girin"
+                                        required
+                                    >
+                                    <button type="button" class="password-toggle" id="passwordToggle">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                                <span class="error-message" id="passwordError"></span>
+                            </div>
+
+                            <div class="form-options">
+                                <label class="checkbox-container">
+                                    <input type="checkbox" id="remember">
+                                    <span class="checkmark"></span>
+                                    Beni Hatırla
+                                </label>
+                                <a href="#" class="forgot-password">Şifremi Unuttum</a>
+                            </div>
+
+                            <button type="submit" class="btn-submit" id="loginBtn">
+                                <span class="btn-text">Giriş Yap</span>
+                                <span class="btn-loading" style="display: none;">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    Giriş yapılıyor...
+                                </span>
+                            </button>
+
+                            <div class="form-divider">
+                                <span>veya</span>
+                            </div>
+
+                            <div class="social-login">
+                                <button type="button" class="social-btn google-btn">
+                                    <i class="fab fa-google"></i>
+                                    Google ile Giriş
+                                </button>
+                                <button type="button" class="social-btn facebook-btn">
+                                    <i class="fab fa-facebook-f"></i>
+                                    Facebook ile Giriş
+                                </button>
+                            </div>
+
+                            <div class="form-footer">
+                                <p>Hesabınız yok mu? <a href="register.html">Üye Ol</a></p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer (Simplified) -->
+    <footer class="auth-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-links">
+                    <a href="#privacy">Gizlilik Politikası</a>
+                    <a href="#terms">Kullanım Şartları</a>
+                    <a href="#support">Destek</a>
+                    <a href="#contact">İletişim</a>
+                </div>
+                <div class="footer-copy">
+                    <p>&copy; 2024 GlobalTradePro. Tüm hakları saklıdır.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="auth-script.js"></script>
+    <script>
+    // Backend entegrasyonu - mevcut auth-script.js fonksiyonlarını override ediyoruz
+    document.addEventListener('DOMContentLoaded', function() {
+        const loginForm = document.getElementById('loginForm');
+        if(loginForm){
+            // Mevcut event listener'ları temizle ve yeni backend entegrasyonu ekle
+            loginForm.addEventListener('submit', function(e){
+                e.preventDefault();
+                
+                const formData = new FormData(loginForm);
+                const username = formData.get('username');
+                const password = formData.get('password');
+                
+                const sendData = new FormData();
+                sendData.append('username', username);
+                sendData.append('password', password);
+                
+                fetch('backend/public/login.php', {
+                    method: 'POST',
+                    credentials: 'include',
+                    body: sendData
+                })
+                .then(r => r.json())
+                .then(data => {
+                    const resultDiv = document.getElementById('loginResult');
+                    resultDiv.innerText = data.message;
+                    resultDiv.style.color = data.success ? '#22c55e' : '#ef4444';
+                    
+                    if(data.success){
+                        // Kullanıcı rolünü kontrol et
+                        fetch('backend/public/profile.php', {
+                            method: 'GET',
+                            credentials: 'include'
+                        })
+                        .then(r => r.json())
+                        .then(userData => {
+                            if(userData.success && userData.user.role === 'admin') {
+                                setTimeout(function(){ 
+                                    window.location.href = 'admin-panel.html'; 
+                                }, 1200);
+                            } else {
+                                setTimeout(function(){ 
+                                    window.location.href = 'user-panel.html'; 
+                                }, 1200);
+                            }
+                        })
+                        .catch(err => {
+                            // Hata durumunda user paneline yönlendir
+                            setTimeout(function(){ 
+                                window.location.href = 'user-panel.html'; 
+                            }, 1200);
+                        });
+                    }
+                })
+                .catch(err => {
+                    const resultDiv = document.getElementById('loginResult');
+                    resultDiv.innerText = 'Bağlantı hatası occurred.';
+                    resultDiv.style.color = '#ef4444';
+                });
+            });
+        }
+    });
+    </script>
+</body>
+</html> 

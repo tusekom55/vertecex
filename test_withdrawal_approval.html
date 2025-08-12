@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Çekme Onaylama Testi</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-section {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .result {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        input {
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Para Çekme Onaylama Testi</h1>
+
+    <div class="test-section">
+        <h3>1. Para Çekme Talepleri Listesi</h3>
+        <button onclick="listWithdrawals()">Talepleri Listele</button>
+        <div id="list-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>2. Para Çekme Onaylama</h3>
+        <input type="number" id="withdrawal-id" placeholder="Talep ID" value="1">
+        <input type="text" id="admin-note" placeholder="Admin notu" value="Test onayı">
+        <button onclick="approveWithdrawal()">Talebi Onayla</button>
+        <div id="approve-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>3. Sadece Beklemede Olan Talepler</h3>
+        <button onclick="listPendingOnly()">Beklemede Olan Talepleri Göster</button>
+        <div id="pending-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>4. Test Talebi Oluştur</h3>
+        <input type="number" id="test-user-id" placeholder="Kullanıcı ID" value="1">
+        <input type="number" id="test-amount" placeholder="Tutar" value="500">
+        <input type="text" id="test-method" placeholder="Yöntem" value="havale">
+        <button onclick="createTestRequest()">Test Talebi Oluştur</button>
+        <div id="test-create-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>5. Oluşturulan Faturalar</h3>
+        <button onclick="listInvoices()">Faturaları Listele</button>
+        <div id="invoices-result" class="result"></div>
+    </div>
+
+    <script>
+        async function listWithdrawals() {
+            const resultDiv = document.getElementById('list-result');
+            resultDiv.textContent = 'Talepler yükleniyor...';
+            
+            try {
+                const response = await fetch('backend/admin/withdrawals.php?action=list');
+                const data = await response.json();
+                
+                resultDiv.textContent = JSON.stringify(data, null, 2);
+                resultDiv.className = data.success ? 'result success' : 'result error';
+            } catch (error) {
+                resultDiv.textContent = 'Error: ' + error.message;
+                resultDiv.className = 'result error';
+            }
+        }
+
+        async function approveWithdrawal() {
+            const withdrawalId = document.getElementById('withdrawal-id').value;
+            const adminNote = document.getElementById('admin-note').value;
+            const resultDiv = document.getElementById('approve-result');
+            
+            if (!withdrawalId) {
+                resultDiv.textContent = 'Lütfen talep ID girin';
+                resultDiv.className = 'result error';
+                return;
+            }
+            
+            resultDiv.textContent = 'Talep onaylanıyor...';
+            
+            try {
+                const formData = new FormData();
+                formData.append('action', 'approve');
+                formData.append('withdrawal_id', withdrawalId);
+                formData.append('aciklama', adminNote);
+                
+                const response = await fetch('backend/admin/withdrawals.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                resultDiv.textContent = JSON.stringify(data, null, 2);
+                resultDiv.className = data.success ? 'result success' : 'result error';
+                
+                if (data.success) {
+                    // Otomatik olarak faturaları da yükle
+                    setTimeout(listInvoices, 1000);
+                }
+            } catch (error) {
+                resultDiv.textContent = 'Error: ' + error.message;
+                resultDiv.className = 'result error';
+            }
+        }
+
+        async function listPendingOnly() {
+            const resultDiv = document.getElementById('pending-result');
+            resultDiv.textContent = 'Beklemede olan talepler yükleniyor...';
+            
+            try {
+                const response = await fetch('backend/admin/withdrawals.php?action=pending_only');
+                const data = await response.json();
+                
+                resultDiv.textContent = JSON.stringify(data, null, 2);
+                resultDiv.className = data.success ? 'result success' : 'result error';
+            } catch (error) {
+                resultDiv.textContent = 'Error: ' + error.message;
+                resultDiv.className = 'result error';
+            }
+        }
+
+        async function createTestRequest() {
+            const userId = document.getElementById('test-user-id').value;
+            const amount = document.getElementById('test-amount').value;
+            const method = document.getElementById('test-method').value;
+            const resultDiv = document.getElementById('test-create-result');
+            
+            if (!userId || !amount) {
+                resultDiv.textContent = 'Lütfen kullanıcı ID ve tutar girin';
+                resultDiv.className = 'result error';
+                return;
+            }
+            
+            resultDiv.textContent = 'Test talebi oluşturuluyor...';
+            
+            try {
+                const formData = new FormData();
+                formData.append('action', 'create_test_request');
+                formData.append('user_id', userId);
+                formData.append('tutar', amount);
+                formData.append('yontem', method);
+                
+                const response = await fetch('backend/admin/withdrawals.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                resultDiv.textContent = JSON.stringify(data, null, 2);
+                resultDiv.className = data.success ? 'result success' : 'result error';
+                
+                if (data.success) {
+                    // Otomatik olarak beklemede olan talepleri de yükle
+                    setTimeout(listPendingOnly, 1000);
+                    // Withdrawal ID'yi onay bölümüne otomatik olarak koy
+                    document.getElementById('withdrawal-id').value = data.withdrawal_id;
+                }
+            } catch (error) {
+                resultDiv.textContent = 'Error: ' + error.message;
+                resultDiv.className = 'result error';
+            }
+        }
+
+        async function listInvoices() {
+            const resultDiv = document.getElementById('invoices-result');
+            resultDiv.textContent = 'Faturalar yükleniyor...';
+            
+            try {
+                const response = await fetch('backend/admin/invoice.php?action=list');
+                const data = await response.json();
+                
+                resultDiv.textContent = JSON.stringify(data, null, 2);
+                resultDiv.className = data.success ? 'result success' : 'result error';
+            } catch (error) {
+                resultDiv.textContent = 'Error: ' + error.message;
+                resultDiv.className = 'result error';
+            }
+        }
+
+        // Sayfa yüklendiğinde talepleri listele
+        window.onload = function() {
+            listWithdrawals();
+            listPendingOnly();
+        };
+    </script>
+</body>
+</html>

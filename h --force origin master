@@ -1,0 +1,3 @@
+[33m3c576d4[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m)[m Initial commit - GlobalTrader project
+[33m1f3d736[m feat: Tamamen yenilenmiş trading modal - Test chart kaldırıldı - Sade ve kullanıcı dostu tasarım - Otomatik hesaplama (miktar/tutar) - Yüzdelik butonlar - Gerçek zamanlı bakiye kontrolü - Masaüstü ve mobil uyumlu - Toast bildirimleri - Tam fonksiyonel Al/Sat işlemleri
+[33me0c3576[m[33m ([m[1;34mgrafted[m[33m)[m feat: Tam fonksiyonel trading sistemi, portföy yönetimi ve işlem geçmişi eklendi - Al/Sat butonları çalışıyor - Portföy sayfası aktif - Profil sayfasında gerçek veriler ve işlem geçmişi - Tüm backend API'lar tamamlandı

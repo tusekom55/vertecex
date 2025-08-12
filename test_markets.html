@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Piyasalar Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a2e;
+            color: white;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .market-header {
+            background: #16213e;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .search-box {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 12px;
+            color: white;
+            width: 300px;
+            margin-bottom: 20px;
+        }
+        .coins-table {
+            background: #16213e;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .table-header {
+            background: #0f172a;
+            padding: 15px;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            font-weight: bold;
+        }
+        .coin-row {
+            padding: 15px;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            border-bottom: 1px solid #334155;
+            transition: background 0.3s;
+        }
+        .coin-row:hover {
+            background: #1e293b;
+        }
+        .coin-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .coin-logo {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #3b82f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        .price-positive {
+            color: #10b981;
+        }
+        .price-negative {
+            color: #ef4444;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #64748b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="market-header">
+            <h1>Piyasalar</h1>
+            <p>Anlık kripto para fiyatları ve piyasa analizi</p>
+            
+            <input type="text" class="search-box" placeholder="Coin ara..." id="searchInput">
+        </div>
+
+        <div class="coins-table">
+            <div class="table-header">
+                <div>Coin</div>
+                <div>Fiyat (TRY)</div>
+                <div>24s Değişim</div>
+                <div>Kategori</div>
+            </div>
+            
+            <div id="coinsContainer">
+                <div class="loading">Coinler yükleniyor...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mock data - gerçek API çalışmadığında kullanılacak
+        const mockCoins = [
+            {
+                id: 1,
+                coin_adi: 'Bitcoin',
+                coin_kodu: 'BTC',
+                current_price: 1350000,
+                price_change_24h: 2.5,
+                kategori_adi: 'Kripto Para'
+            },
+            {
+                id: 2,
+                coin_adi: 'Ethereum',
+                coin_kodu: 'ETH',
+                current_price: 85000,
+                price_change_24h: -1.2,
+                kategori_adi: 'Kripto Para'
+            },
+            {
+                id: 3,
+                coin_adi: 'BNB',
+                coin_kodu: 'BNB',
+                current_price: 12500,
+                price_change_24h: 0.8,
+                kategori_adi: 'Kripto Para'
+            },
+            {
+                id: 4,
+                coin_adi: 'Cardano',
+                coin_kodu: 'ADA',
+                current_price: 15.50,
+                price_change_24h: 3.2,
+                kategori_adi: 'Kripto Para'
+            },
+            {
+                id: 5,
+                coin_adi: 'Solana',
+                coin_kodu: 'SOL',
+                current_price: 4250,
+                price_change_24h: -2.1,
+                kategori_adi: 'Kripto Para'
+            }
+        ];
+
+        let allCoins = [];
+
+        function formatPrice(price) {
+            return new Intl.NumberFormat('tr-TR', {
+                style: 'currency',
+                currency: 'TRY',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(price);
+        }
+
+        function formatChange(change) {
+            const sign = change >= 0 ? '+' : '';
+            return `${sign}${change.toFixed(2)}%`;
+        }
+
+        function renderCoins(coins) {
+            const container = document.getElementById('coinsContainer');
+            
+            if (coins.length === 0) {
+                container.innerHTML = '<div class="loading">Coin bulunamadı</div>';
+                return;
+            }
+
+            container.innerHTML = coins.map(coin => `
+                <div class="coin-row">
+                    <div class="coin-info">
+                        <div class="coin-logo">${coin.coin_kodu.substring(0, 2)}</div>
+                        <div>
+                            <div style="font-weight: bold;">${coin.coin_adi}</div>
+                            <div style="color: #64748b; font-size: 12px;">${coin.coin_kodu}</div>
+                        </div>
+                    </div>
+                    <div style="font-weight: bold;">${formatPrice(coin.current_price)}</div>
+                    <div class="${coin.price_change_24h >= 0 ? 'price-positive' : 'price-negative'}">
+                        ${formatChange(coin.price_change_24h)}
+                    </div>
+                    <div>${coin.kategori_adi}</div>
+                </div>
+            `).join('');
+        }
+
+        function filterCoins(searchTerm) {
+            const filtered = allCoins.filter(coin => 
+                coin.coin_adi.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                coin.coin_kodu.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+            renderCoins(filtered);
+        }
+
+        async function loadCoins() {
+            try {
+                // Gerçek API'yi dene
+                const response = await fetch('./backend/user/coins.php');
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.coins) {
+                        allCoins = data.coins;
+                        renderCoins(allCoins);
+                        console.log('✅ Gerçek API\'den veri yüklendi');
+                        return;
+                    }
+                }
+                
+                throw new Error('API yanıt vermedi');
+                
+            } catch (error) {
+                console.log('⚠️ API hatası, mock data kullanılıyor:', error.message);
+                
+                // Mock data kullan
+                allCoins = mockCoins;
+                renderCoins(allCoins);
+            }
+        }
+
+        // Arama fonksiyonu
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            filterCoins(e.target.value);
+        });
+
+        // Sayfa yüklendiğinde coinleri getir
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Piyasalar sayfası yüklendi');
+            loadCoins();
+        });
+
+        // Her 30 saniyede bir güncelle
+        setInterval(loadCoins, 30000);
+    </script>
+</body>
+</html>
