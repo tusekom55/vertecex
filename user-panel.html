@@ -2513,6 +2513,9 @@
         
         // Para çekme sayfasına yönlendir
         function navigateToWithdrawal() {
+            // Önce balance menüsünü kapat
+            closeBalanceMenu();
+            
             // Sol menüdeki "Para Çek" linkini aktif et
             const navLinks = document.querySelectorAll('.nav-link');
             navLinks.forEach(link => {
