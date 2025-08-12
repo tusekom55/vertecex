@@ -4839,31 +4839,37 @@
                 
                 const logoUrl = coin.logo_url || coinLogos[coin.coin_kodu] || `https://via.placeholder.com/48/4fc3f7/ffffff?text=${coin.coin_kodu.charAt(0)}`;
                 
-                        const card = document.createElement('div');
-                        card.className = 'desktop-coin-card';
-                        card.onclick = () => openTradingModal(coin.id, coin.coin_adi, coin.current_price, 'buy', coin.coin_kodu);
-                        
-                        card.innerHTML = `
-                            <div class="coin-card-header">
-                                <div class="coin-info">
-                                    <div class="coin-logo">
-                                        <img src="${logoUrl}" alt="${coin.coin_adi}" 
-                                             onerror="this.style.display='none'; this.parentNode.textContent='${coin.coin_kodu.charAt(0)}'">
-                                    </div>
-                                    <div class="coin-details">
-                                        <h4>${coin.coin_adi}</h4>
-                                        <span class="coin-symbol">${coin.coin_kodu}</span>
-                                    </div>
-                                </div>
-                                <div class="coin-price">
-                                    <div class="price">₺${parseFloat(coin.current_price).toLocaleString('tr-TR', { 
-                                        minimumFractionDigits: 2, 
-                                        maximumFractionDigits: 2 
-                                    })}</div>
-                                    <div class="rank">#${index + 1}</div>
-                                </div>
+                const card = document.createElement('div');
+                card.className = 'desktop-coin-card';
+                
+                // DÜZELTME: Event listener ile modal açma
+                card.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    console.log('🎯 Desktop coin card clicked:', coin.coin_adi, coin.coin_kodu);
+                    openTradingModal(coin.id, coin.coin_adi, coin.current_price, 'buy', coin.coin_kodu);
+                });
+                
+                card.innerHTML = `
+                    <div class="coin-card-header">
+                        <div class="coin-info">
+                            <div class="coin-logo">
+                                <img src="${logoUrl}" alt="${coin.coin_adi}" 
+                                     onerror="this.style.display='none'; this.parentNode.textContent='${coin.coin_kodu.charAt(0)}'">
                             </div>
-                    
+                            <div class="coin-details">
+                                <h4>${coin.coin_adi}</h4>
+                                <span class="coin-symbol">${coin.coin_kodu}</span>
+                            </div>
+                        </div>
+                        <div class="coin-price">
+                            <div class="price">₺${parseFloat(coin.current_price).toLocaleString('tr-TR', { 
+                                minimumFractionDigits: 2, 
+                                maximumFractionDigits: 2 
+                            })}</div>
+                            <div class="rank">#${index + 1}</div>
+                        </div>
+                    </div>
+            
                     <div class="coin-stats">
                         <div class="price-change ${priceChangeClass}">
                             <i class="fas fa-${coin.price_change_24h >= 0 ? 'arrow-up' : 'arrow-down'}"></i>
@@ -4875,14 +4881,30 @@
                     </div>
                     
                     <div class="coin-actions">
-                        <button class="trade-btn buy" onclick="event.stopPropagation(); openTradingModal('${coin.id}', '${coin.coin_adi}', '${coin.current_price}', 'buy', '${coin.coin_kodu}')">
+                        <button class="trade-btn buy" data-action="buy" data-coin-id="${coin.id}" data-coin-name="${coin.coin_adi}" data-coin-code="${coin.coin_kodu}" data-price="${coin.current_price}">
                             <i class="fas fa-arrow-up"></i> Alış
                         </button>
-                        <button class="trade-btn sell" onclick="event.stopPropagation(); openTradingModal('${coin.id}', '${coin.coin_adi}', '${coin.current_price}', 'sell', '${coin.coin_kodu}')">
+                        <button class="trade-btn sell" data-action="sell" data-coin-id="${coin.id}" data-coin-name="${coin.coin_adi}" data-coin-code="${coin.coin_kodu}" data-price="${coin.current_price}">
                             <i class="fas fa-arrow-down"></i> Satış
                         </button>
                     </div>
                 `;
+                
+                // DÜZELTME: Trade butonları için ayrı event listener'lar
+                const buyBtn = card.querySelector('.trade-btn.buy');
+                const sellBtn = card.querySelector('.trade-btn.sell');
+                
+                buyBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    console.log('🟢 Buy button clicked:', coin.coin_adi);
+                    openTradingModal(coin.id, coin.coin_adi, coin.current_price, 'buy', coin.coin_kodu);
+                });
+                
+                sellBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    console.log('🔴 Sell button clicked:', coin.coin_adi);
+                    openTradingModal(coin.id, coin.coin_adi, coin.current_price, 'sell', coin.coin_kodu);
+                });
                 
                 container.appendChild(card);
             });
