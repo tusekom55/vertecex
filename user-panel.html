@@ -2429,13 +2429,13 @@
                                     <i class="fas fa-chevron-right"></i>
                                 </div>
                             </div>
-                            <div class="balance-menu-item" onclick="showWithdrawalComingSoon()">
+                            <div class="balance-menu-item" onclick="navigateToWithdrawal()">
                                 <div class="balance-menu-icon withdrawal">
                                     <i class="fas fa-minus-circle"></i>
                                 </div>
                                 <div class="balance-menu-text">
                                     <h4>Para Çek</h4>
-                                    <p>Yakında gelecek</p>
+                                    <p>Hesabınızdan para çekin</p>
                                 </div>
                                 <div class="balance-menu-arrow">
                                     <i class="fas fa-chevron-right"></i>
@@ -2508,7 +2508,6 @@
         
         // Para çekme sayfasına yönlendir
         function showWithdrawalComingSoon() {
-            closeBalanceMenu();
             navigateToWithdrawal();
         }
         
